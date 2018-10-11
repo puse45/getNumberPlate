@@ -29,10 +29,12 @@ signals:
 
 
 public slots:
-    void getLicensePlate(QString plate);
+    void getLicensePlate(QString path ,QString plate);
 
 private:
-    MyJob myjob;
+    string croppedImageDir = "images";
+    QString imagePath();
+    licenseRecognition recognitionLicense;
 };
 
 #endif //COUNTINGCARS_DETECTVEHICLE_H

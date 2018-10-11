@@ -16,27 +16,34 @@
 #include <alpr.h>
 #include <iterator>
 #include <iostream>
+#include <regex>
+#include <algorithm>
+#include <string>
+
 using namespace std;
 
 
-class MyJob : public QObject{
+class licenseRecognition : public QObject{
 Q_OBJECT
 public:
-    explicit MyJob(QObject *parent= 0);
-    ~MyJob();
+    explicit licenseRecognition(QObject *parent= 0);
+    ~licenseRecognition();
     void start(QString name);
 
 
 signals:
-    void imagePath(QString name);
+    void imagePath(QString path,QString plate);
 
 public slots:
     void stop();
 
 private:
     bool mStop;
+    string cleanPlateRecognised;
 //    string imagelocation;
     void processimage(QString path);
+    string validateLicensePlate(string plateRecognised);
+    string removeNewLine(string plateRecognised);
 
 };
 #endif //THREAD_PROCESS_H

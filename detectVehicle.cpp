@@ -12,8 +12,14 @@ using namespace cv;
 
 
 DetectVehicle::DetectVehicle(QObject *parent) {
-    connect(&myjob,&MyJob::imagePath,this,&DetectVehicle::getLicensePlate);
-    connect(this,&DetectVehicle::on_stop,&myjob,&MyJob::stop);
+    QString currentPath = DetectVehicle::imagePath();
+//    QString currentPath = "/home/pinje/project/CountingCars/";
+    string croppedImageDir = "/images";
+    string savingImageDir = currentPath.toStdString()+ croppedImageDir;
+    QDir dir(QString::fromStdString(savingImageDir));
+    dir.removeRecursively();
+    connect(&recognitionLicense,&licenseRecognition::imagePath,this,&DetectVehicle::getLicensePlate);
+    connect(this,&DetectVehicle::on_stop,&recognitionLicense,&licenseRecognition::stop);
 }
 
 DetectVehicle::~DetectVehicle() {}
@@ -123,17 +129,18 @@ inline void showAmountOfCars(Mat& frame, int amountOfCars) {
     putText(frame, to_string(amountOfCars), Point(frame.cols/2-20, frame.rows / 5 * 3 - 20), FONT_HERSHEY_SIMPLEX, 4, (0, 0, 0),3);
 }
 
-QString imagePath() {
+QString DetectVehicle::imagePath() {
     QString path = QDir::currentPath();
     return path;
 }
 
 string cropVehicle(Rect cars, Mat& frame){
-//    QString currentPath = imagePath();
-    QString currentPath = "/home/pinje/project/CountingCars/";
-    string croppedImageDir = "images";
+    QString currentPath = QDir::currentPath();
+//    QString currentPath = "/home/pinje/project/CountingCars/";
+    string croppedImageDir = "/images";
     string savingImageDir = currentPath.toStdString()+ croppedImageDir;
     QString savingPath = QString::fromStdString(savingImageDir);
+
     if(!QDir(savingPath).exists()){
         QDir().mkdir(savingPath);
     }
@@ -162,7 +169,9 @@ void DetectVehicle::startDetection() {
     vector<Car> previousCars;
     VideoCapture cap;
 
-    cap.open("/home/pinje/Pictures/license/highway3.mp4");
+//    cap.open("/home/geoswift1/Videos/crop_cars/MOVA0089.avi");
+    cap.open("/home/geoswift1/Videos/crop_cars/1min.mp4");
+//    cap.open("/home/geoswift1/Videos/testVids/plate5.mp4");
     cap.read(frame);
 
     int counter = 0;
@@ -185,8 +194,8 @@ void DetectVehicle::startDetection() {
                 cars.push_back(Car(car));
                 string savedVehiclePath = cropVehicle(car,frame);
                 QString detectedImagePath = QString::fromStdString(savedVehiclePath);
-//                QFuture<void> test = QtConcurrent::run(&this->myjob,&MyJob::start,QString("/home/pinje/project/CountingCars/images/1681692777.jpg"));
-                QFuture<void> test = QtConcurrent::run(&this->myjob,&MyJob::start,QString(detectedImagePath));
+//                QFuture<void> test = QtConcurrent::run(&this->myjob,&licenseRecognition::start,QString("/home/pinje/project/CountingCars/images/1681692777.jpg"));
+                QFuture<void> test = QtConcurrent::run(&this->recognitionLicense,&licenseRecognition::start,QString(detectedImagePath));
 
 //                cout << "Saved cropped vehicle images " << savedVehiclePath <<endl;
             }
@@ -217,8 +226,10 @@ void DetectVehicle::startDetection() {
     destroyAllWindows();
 }
 
-void DetectVehicle::getLicensePlate(QString plate) {
+void DetectVehicle::getLicensePlate(QString path ,QString plate) {
 //    cout << plate.size();
+    if(plate!=""){
+        qDebug() << "Image path " << path << "Plate recoginised " << plate;
+    }
 
-    qDebug() << "Plate Recoginised " << plate;
 }

@@ -7,29 +7,29 @@
 
 using namespace std;
 
-MyJob::MyJob(QObject *parent) : QObject(parent)
+licenseRecognition::licenseRecognition(QObject *parent) : QObject(parent)
 {
     mStop = false;
 }
-MyJob::~MyJob() {
+licenseRecognition::~licenseRecognition() {
 
 }
 
-void MyJob::start(QString name) {
-    qDebug() << "Signal name " << name;
+void licenseRecognition::start(QString name) {
+//    qDebug() << "Signal name " << name;
     mStop = false;
         if(mStop)return;
         processimage(name);
-        QThread::currentThread()->msleep(100);
+        QThread::currentThread()->msleep(10);
 //        emit imagePath(name);
 }
 
-void MyJob::stop() {
+void licenseRecognition::stop() {
     mStop = true;
 
 }
 
-void MyJob::processimage(QString path) {
+void licenseRecognition::processimage(QString path) {
     string imagelocation = path.toStdString();
     string* bestPlate = new string;
     std::vector< string >  platerecimagepath;
@@ -68,10 +68,31 @@ void MyJob::processimage(QString path) {
     }
 
 //    std::cout << "Best Plate "<< *bestPlate << endl;
-    QString qstr = QString::fromStdString(*bestPlate);
+
     delete openalpr;
 //    emit imagePath(path);
-    emit imagePath(qstr);
+    string checkPlatePattern = validateLicensePlate(*bestPlate);
+    if(checkPlatePattern != ""){
+        QString plate = QString::fromStdString(checkPlatePattern);
+        emit imagePath(path,plate);
+    }
+
 //    emit imagePath(platerecimagepath);
 //    return platerecimagepath;
+}
+
+string licenseRecognition::removeNewLine(string plateRecognised) {
+    plateRecognised.erase(std::remove(plateRecognised.begin(),plateRecognised.end(), '\n'),plateRecognised.end());
+    return plateRecognised;
+}
+
+string licenseRecognition::validateLicensePlate(string plateRecognised) {
+    regex licensePlateSignature("[Kk]{1}[a-zA-ZA-z]{2}[0-9]{3}");
+    cleanPlateRecognised = removeNewLine(plateRecognised);
+    if(regex_match(cleanPlateRecognised,licensePlateSignature)){
+        return cleanPlateRecognised;
+    }
+    else{
+        return 0;
+    }
 }
