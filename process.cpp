@@ -74,7 +74,8 @@ void licenseRecognition::processimage(QString path) {
     string checkPlatePattern = validateLicensePlate(*bestPlate);
     if(checkPlatePattern != ""){
         QString plate = QString::fromStdString(checkPlatePattern);
-        emit imagePath(path,plate);
+        QString imagepath = QString::fromStdString(imagelocation);
+        emit imagePath(imagepath,plate);
     }
 
 //    emit imagePath(platerecimagepath);
@@ -87,7 +88,7 @@ string licenseRecognition::removeNewLine(string plateRecognised) {
 }
 
 string licenseRecognition::validateLicensePlate(string plateRecognised) {
-    regex licensePlateSignature("[Kk]{1}[a-zA-ZA-z]{2}[0-9]{3}");
+    regex licensePlateSignature("([Kk]{1}[a-zA-ZA-z]{2}[0-9]{3})([a-zA-ZA-z]{1}?)");
     cleanPlateRecognised = removeNewLine(plateRecognised);
     if(regex_match(cleanPlateRecognised,licensePlateSignature)){
         return cleanPlateRecognised;

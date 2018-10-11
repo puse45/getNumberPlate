@@ -51,7 +51,7 @@ vector<Rect>drawCarsContours(Mat& frame, vector<vector<Point>> contours) {
     vector<vector<Point>> goodMatchsContours;
     vector<Rect> goodMatchRects;
     string extension = ".jpg";
-    string saveDir = "/home/pinje/projects/CountingCars/images/";
+    string saveDir = "/home/geoswift1/CLionProjects/getNumberPlate/images/";
     int random_integer = rand();
     findContours(hullsFrame, goodMatchsContours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
     for (int i = 0;i < goodMatchsContours.size();i++) {
@@ -66,7 +66,7 @@ vector<Rect>drawCarsContours(Mat& frame, vector<vector<Point>> contours) {
         imwrite(s , cropped );
 //        cout << "From function drawCarsContours " <<rect << endl;
         rectangle(frame, rect, Scalar(69, 0, 225));
-
+//        imwrite(s,cropped );
     }
     //imshow("hull", hullsFrame);
 
@@ -170,8 +170,8 @@ void DetectVehicle::startDetection() {
     VideoCapture cap;
 
 //    cap.open("/home/geoswift1/Videos/crop_cars/MOVA0089.avi");
-    cap.open("/home/geoswift1/Videos/crop_cars/1min.mp4");
-//    cap.open("/home/geoswift1/Videos/testVids/plate5.mp4");
+//    cap.open("/home/geoswift1/Videos/crop_cars/1min.mp4");
+    cap.open("/home/geoswift1/Videos/testVids/plate5.mp4");
     cap.read(frame);
 
     int counter = 0;
@@ -192,16 +192,15 @@ void DetectVehicle::startDetection() {
 //            cout << car <<endl;
             if (!matchToExistingCars(cars, car)){
                 cars.push_back(Car(car));
-                string savedVehiclePath = cropVehicle(car,frame);
-                QString detectedImagePath = QString::fromStdString(savedVehiclePath);
-//                QFuture<void> test = QtConcurrent::run(&this->myjob,&licenseRecognition::start,QString("/home/pinje/project/CountingCars/images/1681692777.jpg"));
-                QFuture<void> test = QtConcurrent::run(&this->recognitionLicense,&licenseRecognition::start,QString(detectedImagePath));
-
-//                cout << "Saved cropped vehicle images " << savedVehiclePath <<endl;
+               //                cout << "Saved cropped vehicle images " << savedVehiclePath <<endl;
             }
 
             else {
                 previousCars.push_back(Car(car));
+                string savedVehiclePath = cropVehicle(car,frame);
+                QString detectedImagePath = QString::fromStdString(savedVehiclePath);
+//                QFuture<void> test = QtConcurrent::run(&this->myjob,&licenseRecognition::start,QString("/home/pinje/project/CountingCars/images/1681692777.jpg"));
+                QFuture<void> test = QtConcurrent::run(&this->recognitionLicense,&licenseRecognition::start,QString(detectedImagePath));
             }
         }
 
