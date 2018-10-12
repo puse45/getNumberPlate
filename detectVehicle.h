@@ -12,7 +12,7 @@
 #include <zconf.h>
 #include <sys/param.h>
 #include <QtCore/QDir>
-#include "process.h"
+#include "worker.h"
 
 class DetectVehicle : public QObject
 {
@@ -21,12 +21,11 @@ Q_OBJECT
 public:
     DetectVehicle(QObject *parent = 0);
     ~DetectVehicle();
-    void startDetection();
+    void startDetection(string videoPath);
 signals:
     void on_stop();
 
 //private slots:
-
 
 public slots:
     void getLicensePlate(QString path ,QString plate);

@@ -2,7 +2,7 @@
 // Created by geoswift1 on 10/9/18.
 //
 
-#include "process.h"
+#include "worker.h"
 #include <iostream>
 
 using namespace std;
@@ -15,29 +15,21 @@ licenseRecognition::~licenseRecognition() {
 
 }
 
-void licenseRecognition::start(QString name) {
+void licenseRecognition::start(QString path) {
 //    qDebug() << "Signal name " << name;
     mStop = false;
         if(mStop)return;
-        processimage(name);
-        QThread::currentThread()->msleep(10);
-//        emit imagePath(name);
-}
 
-void licenseRecognition::stop() {
-    mStop = true;
+    string* imagelocation = new string;
 
-}
-
-void licenseRecognition::processimage(QString path) {
-    string imagelocation = path.toStdString();
+    *imagelocation = path.toStdString();
     string* bestPlate = new string;
     std::vector< string >  platerecimagepath;
 //    std::cout << "Image Path "<< imagelocation << endl;
-    alpr::Alpr *openalpr= new alpr::Alpr("eu,vn2", "/etc/openalpr/openalpr.conf");
+    alpr::Alpr *openalpr= new alpr::Alpr("us,eu,vn2", "/etc/openalpr/openalpr.conf");
     openalpr->setTopN(20);
     // comparing the plate text with the regional pattern.
-    openalpr->setDefaultRegion("md");
+    openalpr->setDefaultRegion("eu");
     // Make sure the library loaded before continuing.
     // For example, it could fail if the config/runtime_data is not found
     if (!openalpr->isLoaded())
@@ -47,14 +39,14 @@ void licenseRecognition::processimage(QString path) {
     }
 
     // Recognize an image file.  You could alternatively provide the image bytes in-memory.
-    alpr::AlprResults results = openalpr->recognize(imagelocation);
+    alpr::AlprResults results = openalpr->recognize(*imagelocation);
     for (int i = 0; i < results.plates.size(); i++)
     {
         alpr::AlprPlateResult plate = results.plates[i];
 //        std::cout << "plate" << i << ": " << plate.topNPlates.size() << " results" << std::endl;
         *bestPlate = results.plates[i].bestPlate.characters+"\n";
         if(bestPlate){
-            platerecimagepath.push_back(imagelocation);
+            platerecimagepath.push_back(*imagelocation);
             platerecimagepath.push_back(*bestPlate);
         }
 
@@ -72,11 +64,16 @@ void licenseRecognition::processimage(QString path) {
     delete openalpr;
 //    emit imagePath(path);
     string checkPlatePattern = validateLicensePlate(*bestPlate);
+//    QVector<string> combine = QVector<string>::fromStdVector (platerecimagepath);
     if(checkPlatePattern != ""){
         QString plate = QString::fromStdString(checkPlatePattern);
-        QString imagepath = QString::fromStdString(imagelocation);
+        QString imagepath = QString::fromStdString(*imagelocation);
         emit imagePath(imagepath,plate);
     }
+
+    delete imagelocation;
+    delete bestPlate;
+    QThread::currentThread()->msleep(10);
 
 //    emit imagePath(platerecimagepath);
 //    return platerecimagepath;
@@ -88,7 +85,7 @@ string licenseRecognition::removeNewLine(string plateRecognised) {
 }
 
 string licenseRecognition::validateLicensePlate(string plateRecognised) {
-    regex licensePlateSignature("([Kk]{1}[a-zA-ZA-z]{2}[0-9]{3})([a-zA-ZA-z]{1}?)");
+    regex licensePlateSignature("([Kk]{1}[a-zA-ZA-z]{2}[0-9]{3})([a-zA-ZA-z]{1})?");
     cleanPlateRecognised = removeNewLine(plateRecognised);
     if(regex_match(cleanPlateRecognised,licensePlateSignature)){
         return cleanPlateRecognised;
@@ -96,4 +93,10 @@ string licenseRecognition::validateLicensePlate(string plateRecognised) {
     else{
         return 0;
     }
+}
+
+
+void licenseRecognition::stop() {
+    mStop = true;
+
 }

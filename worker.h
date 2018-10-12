@@ -28,7 +28,7 @@ Q_OBJECT
 public:
     explicit licenseRecognition(QObject *parent= 0);
     ~licenseRecognition();
-    void start(QString name);
+    void start(QString path);
 
 
 signals:
@@ -41,7 +41,7 @@ private:
     bool mStop;
     string cleanPlateRecognised;
 //    string imagelocation;
-    void processimage(QString path);
+//    void processimage(QString path);
     string validateLicensePlate(string plateRecognised);
     string removeNewLine(string plateRecognised);
 

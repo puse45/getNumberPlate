@@ -22,7 +22,9 @@ DetectVehicle::DetectVehicle(QObject *parent) {
     connect(this,&DetectVehicle::on_stop,&recognitionLicense,&licenseRecognition::stop);
 }
 
-DetectVehicle::~DetectVehicle() {}
+DetectVehicle::~DetectVehicle() {
+    emit on_stop();
+}
 
 bool isCorectMatch(vector<Point> contour,Rect boundingRect) {
     double ratio = (double)boundingRect.width / (double)boundingRect.height;
@@ -161,7 +163,7 @@ string cropVehicle(Rect cars, Mat& frame){
 }
 
 
-void DetectVehicle::startDetection() {
+void DetectVehicle::startDetection(string videoPath) {
     Mat frame;
     Mat nextFrame;
 
@@ -171,7 +173,7 @@ void DetectVehicle::startDetection() {
 
 //    cap.open("/home/geoswift1/Videos/crop_cars/MOVA0089.avi");
 //    cap.open("/home/geoswift1/Videos/crop_cars/1min.mp4");
-    cap.open("/home/geoswift1/Videos/testVids/plate5.mp4");
+    cap.open(videoPath);
     cap.read(frame);
 
     int counter = 0;
@@ -219,16 +221,20 @@ void DetectVehicle::startDetection() {
         imshow("window", frame);
         frame = nextFrame.clone();
         char c=(char)waitKey(25);
-        if(c==27)
+        if(c==27){
+            emit on_stop();
             break;
+        }
+
     }
+
     destroyAllWindows();
 }
 
 void DetectVehicle::getLicensePlate(QString path ,QString plate) {
 //    cout << plate.size();
     if(plate!=""){
-        qDebug() << "Image path " << path << "Plate recoginised " << plate;
+        qDebug() << "Image path " << path << "Plate recoginised " << plate ;
     }
 
 }

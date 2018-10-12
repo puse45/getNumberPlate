@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     DetectVehicle dvehicle;
-    dvehicle.startDetection();
+    dvehicle.startDetection("/home/geoswift1/Videos/testVids/plate5.mp4");
     return a.exec();
 }
 
