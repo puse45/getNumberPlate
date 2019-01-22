@@ -19,6 +19,7 @@
 #include <regex>
 #include <algorithm>
 #include <string>
+#include <mutex>
 
 using namespace std;
 
@@ -29,6 +30,8 @@ public:
     explicit licenseRecognition(QObject *parent= 0);
     ~licenseRecognition();
     void start(QString path);
+    void executes();
+    mutex mutex_;
 
 
 signals:

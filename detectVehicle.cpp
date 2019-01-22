@@ -164,6 +164,7 @@ string cropVehicle(Rect cars, Mat& frame){
 
 
 void DetectVehicle::startDetection(string videoPath) {
+    std::thread detThread(&licenseRecognition::executes,&recognitionLicense);
     Mat frame;
     Mat nextFrame;
 
@@ -201,8 +202,15 @@ void DetectVehicle::startDetection(string videoPath) {
                 previousCars.push_back(Car(car));
                 string savedVehiclePath = cropVehicle(car,frame);
                 QString detectedImagePath = QString::fromStdString(savedVehiclePath);
+                recognitionLicense.mutex_.lock();
+                recognitionLicense.start(detectedImagePath);
+                recognitionLicense.mutex_.unlock();
 //                QFuture<void> test = QtConcurrent::run(&this->myjob,&licenseRecognition::start,QString("/home/pinje/project/CountingCars/images/1681692777.jpg"));
-                QFuture<void> test = QtConcurrent::run(&this->recognitionLicense,&licenseRecognition::start,QString(detectedImagePath));
+//                QFuture<void> test = QtConcurrent::run(&this->recognitionLicense,&licenseRecognition::start,QString(detectedImagePath));
+
+//                detThread.join();
+//                delete recognitionLicense;
+
             }
         }
 
@@ -227,6 +235,7 @@ void DetectVehicle::startDetection(string videoPath) {
         }
 
     }
+    detThread.join();
 
     destroyAllWindows();
 }

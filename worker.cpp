@@ -15,6 +15,16 @@ licenseRecognition::~licenseRecognition() {
 
 }
 
+void licenseRecognition::executes()
+{
+
+
+    std::cout << "Starting recognition " << endl;
+
+
+//    QThread::currentThread()->msleep(10);
+}
+
 void licenseRecognition::start(QString path) {
 //    qDebug() << "Signal name " << name;
     mStop = false;
@@ -63,17 +73,25 @@ void licenseRecognition::start(QString path) {
 
     delete openalpr;
 //    emit imagePath(path);
-    string checkPlatePattern = validateLicensePlate(*bestPlate);
+    if(validateLicensePlate(*bestPlate)!="0"){
+        string checkPlatePattern = validateLicensePlate(*bestPlate);
+
+
+
+
 //    QVector<string> combine = QVector<string>::fromStdVector (platerecimagepath);
-    if(checkPlatePattern != ""){
-        QString plate = QString::fromStdString(checkPlatePattern);
-        QString imagepath = QString::fromStdString(*imagelocation);
-        emit imagePath(imagepath,plate);
+        if(checkPlatePattern != ""){
+            QString plate = QString::fromStdString(checkPlatePattern);
+            QString imagepath = QString::fromStdString(*imagelocation);
+            emit imagePath(imagepath,plate);
+        }
+
+
+        delete imagelocation;
+        delete bestPlate;
     }
 
-    delete imagelocation;
-    delete bestPlate;
-    QThread::currentThread()->msleep(10);
+//    QThread::currentThread()->msleep(10);
 
 //    emit imagePath(platerecimagepath);
 //    return platerecimagepath;
@@ -85,13 +103,15 @@ string licenseRecognition::removeNewLine(string plateRecognised) {
 }
 
 string licenseRecognition::validateLicensePlate(string plateRecognised) {
+
     regex licensePlateSignature("([Kk]{1}[a-zA-ZA-z]{2}[0-9]{3})([a-zA-ZA-z]{1})?");
     cleanPlateRecognised = removeNewLine(plateRecognised);
     if(regex_match(cleanPlateRecognised,licensePlateSignature)){
         return cleanPlateRecognised;
     }
     else{
-        return 0;
+        return "0";
+//        return 0;
     }
 }
 

@@ -7,12 +7,15 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
+#include <thread>
 #include <iostream>
 #include <cmath>
 #include <zconf.h>
 #include <sys/param.h>
 #include <QtCore/QDir>
 #include "worker.h"
+
+using namespace std;
 
 class DetectVehicle : public QObject
 {
@@ -34,6 +37,7 @@ private:
     string croppedImageDir = "images";
     QString imagePath();
     licenseRecognition recognitionLicense;
+//    licenseRecognition * recognitionLicense = new licenseRecognition();
 };
 
 #endif //COUNTINGCARS_DETECTVEHICLE_H
