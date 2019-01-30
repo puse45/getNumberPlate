@@ -7,6 +7,7 @@
 using namespace std;
 using namespace cv;
 
+
 class Car {
 private:
 	Rect rect;

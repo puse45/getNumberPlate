@@ -12,6 +12,7 @@
 #include<cstdlib>
 #include<iostream>
 #include<dirent.h>
+#include <thread>
 #include <vector>
 #include <alpr.h>
 #include <iterator>
@@ -30,6 +31,7 @@ public:
     explicit licenseRecognition(QObject *parent= 0);
     ~licenseRecognition();
     void start(QString path);
+    void test(QString path);
     void executes();
     mutex mutex_;
 

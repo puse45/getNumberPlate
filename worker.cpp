@@ -24,7 +24,16 @@ void licenseRecognition::executes()
 
 //    QThread::currentThread()->msleep(10);
 }
+void licenseRecognition::test(QString path) {
+    qDebug()<<path<<endl;
+    for (int i = 0; i < 10000; i++)
+    {
+        cout << "CB()=" << i << endl;
+    }
+//    std::thread t1(start,path);
+//    std::cout << "Starting recognition " << endl;
 
+}
 void licenseRecognition::start(QString path) {
 //    qDebug() << "Signal name " << name;
     mStop = false;
