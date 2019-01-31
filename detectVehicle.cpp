@@ -129,7 +129,6 @@ string DetectVehicle::validateLicensePlate(string plateRecognised) {
     }
     else{
         return "0";
-//        return 0;
     }
 }
 
