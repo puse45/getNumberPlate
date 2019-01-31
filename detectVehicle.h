@@ -29,11 +29,8 @@ Q_OBJECT
 public:
     DetectVehicle(QObject *parent = 0);
     ~DetectVehicle();
-    void startDetection(string videoPath);
-    void startDetect();
-    vector<Rect> setFrame();
+
     void Capture_Frame(const Mat& _new_frame, Mat& _new_next_frame);
-    void Display_Res();
     void Vehicle_Recogniton();
     Mat current_frame_;
     mutex mutex_;
@@ -41,7 +38,6 @@ public:
     Mat frame;
     Mat nextFrame;
     int counter = 0;
-    void loop();
 
     vector<Car> cars;
     vector<Car> previousCars;
@@ -49,13 +45,10 @@ public:
     alpr::Alpr *openalpr;
     vector<Point> detectedPts;
     vector<Point> areaOfInterest();
-signals:
-    void on_stop();
+
 
 //private slots:
-
 public slots:
-    void getLicensePlate(QString path ,QString plate);
     void stop();
 
 private:

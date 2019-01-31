@@ -1,4 +1,5 @@
 images/
 cmake-build-debug/
 test*
+*.xml
 
