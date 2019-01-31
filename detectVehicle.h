@@ -16,8 +16,7 @@
 #include <alpr.h>
 #include <iterator>
 #include <regex>
-#include "worker.h"
-#include "Car.cpp"
+#include <mutex>
 
 using namespace std;
 using namespace cv;
@@ -39,8 +38,6 @@ public:
     Mat nextFrame;
     int counter = 0;
 
-    vector<Car> cars;
-    vector<Car> previousCars;
     QString detectedImagePath;
     alpr::Alpr *openalpr;
     vector<Point> detectedPts;
@@ -53,10 +50,13 @@ public slots:
 
 private:
     string croppedImageDir = "images";
-    QString imagePath();
-//    licenseRecognition recognitionLicense;
+    string cleanPlateRecognised;
     bool mStop = false;
-//    licenseRecognition * recognitionLicense = new licenseRecognition();
+    string removeNewLine(string plateRecognised);
+    string validateLicensePlate(string plateRecognised);
+    QString imagePath();
+    string* platechar = new string;
+    alpr::AlprResults results;
 };
 
 #endif //COUNTINGCARS_DETECTVEHICLE_H

@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 //    DetectVehicle dvehicle;
 //    dvehicle.startDetection("/home/geoswift1/Videos/testVids/plate5.mp4");
     Player player;
-    player.startDetection("/home/pinj/Videos/testVids/plate5.mp4");
+    player.startDetection("/home/pinje/Videos/testVids/plate5.mp4");
     return a.exec();
 }
 

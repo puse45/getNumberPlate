@@ -17,10 +17,10 @@ DetectVehicle::DetectVehicle(QObject *parent) {
     string savingImageDir = currentPath.toStdString()+ croppedImageDir;
     QDir dir(QString::fromStdString(savingImageDir));
     dir.removeRecursively();
-    openalpr = new alpr::Alpr("eu,vn2", "/etc/openalpr/openalpr.conf");
+    openalpr = new alpr::Alpr("us,eu,vn2", "/etc/openalpr/openalpr.conf");
     openalpr->setTopN(20);
     // comparing the plate text with the regional pattern.
-    openalpr->setDefaultRegion("md");
+    openalpr->setDefaultRegion("eu");
     // Make sure the library loaded before continuing.
     // For example, it could fail if the config/runtime_data is not found
     if (!openalpr->isLoaded())
@@ -73,7 +73,6 @@ void DetectVehicle::Vehicle_Recogniton(){
             cv::imencode(".bmp", img, buffer);
             std::vector<alpr::AlprRegionOfInterest> regionsOfInterest;
             regionsOfInterest.push_back(alpr::AlprRegionOfInterest(0,0, img.cols, img.rows));
-            alpr::AlprResults results;
             results = openalpr->recognize(img.data, img.elemSize(), img.cols, img.rows,regionsOfInterest);
             for (int i = 0; i < results.plates.size(); i++)
             {
@@ -81,10 +80,8 @@ void DetectVehicle::Vehicle_Recogniton(){
                 int x2 = results.plates[i].plate_points[1].x, y2 = results.plates[i].plate_points[1].y;
                 int x3 = results.plates[i].plate_points[2].x, y3 = results.plates[i].plate_points[2].y;
                 int x4 = results.plates[i].plate_points[3].x, y4 = results.plates[i].plate_points[3].y;
-                std::string platechar;
-                platechar = results.plates[i].bestPlate.characters;
-                platechar.erase(std::remove(platechar.begin(), platechar.end(), '\n'), platechar.end());
-
+                *platechar = results.plates[i].bestPlate.characters;
+                *platechar->erase(std::remove(platechar->begin(), platechar->end(), '\n'), platechar->end());
                 alpr::AlprPlateResult plate = results.plates[i];
                 vector<Point> contour;
                 contour.push_back(Point(x1,y1));
@@ -92,24 +89,14 @@ void DetectVehicle::Vehicle_Recogniton(){
                 contour.push_back(Point(x3,y3));
                 contour.push_back(Point(x4,y4));
                 detectedPts = contour;
-                const cv::Point *pts = (const cv::Point*) Mat(contour).data;
-                int npts = Mat(contour).rows;
-                polylines(img, &pts,&npts, 1,
-                          true, 			// draw closed contour (i.e. joint end to start)
-                          Scalar(0,255,0),// colour RGB ordering (here = green)
-                          1, 		        // line thickness
-                          CV_AA, 0);
-//                std::cout << " Plate predicted : " << platenumberpredicted << "\t Confidence level : " << candidate.overall_confidence << std::endl;
-                for (auto k = 0; k < plate.topNPlates.size(); k++)
-                {
-                    alpr::AlprPlate candidate = plate.topNPlates[k];
-                    std::string platenumberpredicted;
-                    platenumberpredicted = candidate.characters;
-                    platenumberpredicted.erase(std::remove(platenumberpredicted.begin(), platenumberpredicted.end(), '\n'), platenumberpredicted.end());
-                    std::cout << " Plate predicted : " << platenumberpredicted << "\t Confidence level : " << candidate.overall_confidence << std::endl;
-                    std::cout << "Best plate result : " << platechar << " Results" << std::endl;
-                }
 
+                if(validateLicensePlate(*platechar)!="0"){
+                    string checkPlatePattern = validateLicensePlate(*platechar);
+                    if(checkPlatePattern != ""){
+                        QString plate = QString::fromStdString(checkPlatePattern);
+                        qDebug()<<plate<<endl;
+                    }
+                }
             }
         }
     }
@@ -128,6 +115,23 @@ void DetectVehicle::Capture_Frame(const Mat& _new_frame, Mat& _new_next_frame)
     nextFrame = _new_next_frame.clone();
 }
 
+string DetectVehicle::removeNewLine(string plateRecognised) {
+    plateRecognised.erase(std::remove(plateRecognised.begin(),plateRecognised.end(), '\n'),plateRecognised.end());
+    return plateRecognised;
+}
+
+string DetectVehicle::validateLicensePlate(string plateRecognised) {
+
+    regex licensePlateSignature("([Kk]{1}[a-zA-ZA-z]{2}[0-9]{3})([a-zA-ZA-z]{1})?");
+    cleanPlateRecognised = removeNewLine(plateRecognised);
+    if(regex_match(cleanPlateRecognised,licensePlateSignature)){
+        return cleanPlateRecognised;
+    }
+    else{
+        return "0";
+//        return 0;
+    }
+}
 
 void DetectVehicle::stop() {
     qDebug()<<endl<<"Stopping detection "<<endl;

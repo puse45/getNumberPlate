@@ -3,7 +3,6 @@
 //
 
 #include "player.h"
-#include "Car.cpp"
 
 Player::Player(QObject *parent) {
     connect(this,&Player::on_stop_dv,&dv,&DetectVehicle::stop);
@@ -13,16 +12,12 @@ Player::~Player() {
 
 }
 
-
 void Player::startDetection(string videoPath) {
     Mat frame;
     Mat nextFrame;
-    vector<Car> cars;
-    vector<Car> previousCars;
     VideoCapture cap;
     cap.open(videoPath);
     cap.read(frame);
-
     if(!frame.empty()){
     std::thread RecogThread(&DetectVehicle::Vehicle_Recogniton,&dv);
     while (1) {
@@ -31,6 +26,7 @@ void Player::startDetection(string videoPath) {
         if(nextFrame.empty()){
             cout<<"End of video file"<<endl;
             emit on_stop_dv();
+            destroyAllWindows();
         }
         if (nextFrame.empty() || key == 'q')
             break;
@@ -38,15 +34,16 @@ void Player::startDetection(string videoPath) {
         dv.Capture_Frame(frame,nextFrame);
         vector<Point> contour = dv.areaOfInterest();
         const cv::Point *pts = (const cv::Point*) Mat(contour).data;
-        int npts = Mat(contour).rows;
+        npts = Mat(contour).rows;
         polylines(nextFrame, &pts,&npts, 1,
                   true, 			// draw closed contour (i.e. joint end to start)
-                  Scalar(0,255,0),// colour RGB ordering (here = green)
+                  Scalar(255,0,255),// colour RGB ordering (here = green)
                   2, 		        // line thickness
                   CV_AA, 0);
-        mutex_.unlock();
+
         imshow("window", nextFrame);
         frame = nextFrame.clone();
+        mutex_.unlock();
         char c=(char)waitKey(25);
         if(c==27){
             emit on_stop_dv();

@@ -29,12 +29,8 @@ public:
 signals:
     void on_stop_dv();
 private:
-    string croppedImageDir = "images";
-    QString imagePath();
     DetectVehicle dv;
-
-
-
+    int npts;
 };
 
 #endif //GETNUMBERPLATE_PLAYER_H
