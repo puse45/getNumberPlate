@@ -5,7 +5,7 @@
 #include "player.h"
 
 Player::Player(QObject *parent) {
-    connect(this,&Player::on_stop_dv,&dv,&DetectVehicle::stop);
+//    connect(this,&Player::on_stop_dv,&dv,&DetectVehicle::stop);
 }
 
 Player::~Player() {

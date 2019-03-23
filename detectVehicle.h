@@ -10,8 +10,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <zconf.h>
-#include <sys/param.h>
 #include <QtCore/QDir>
 #include <alpr.h>
 #include <iterator>
@@ -21,9 +19,8 @@
 using namespace std;
 using namespace cv;
 
-class DetectVehicle : public QObject
+class DetectVehicle
 {
-Q_OBJECT
 
 public:
     DetectVehicle(QObject *parent = 0);
@@ -38,15 +35,15 @@ public:
     Mat nextFrame;
     int counter = 0;
 
-    QString detectedImagePath;
+//    QString detectedImagePath;
     alpr::Alpr *openalpr;
     vector<Point> detectedPts;
     vector<Point> areaOfInterest();
 
 
 //private slots:
-public slots:
-    void stop();
+//public slots:
+//    void stop();
 
 private:
     string croppedImageDir = "images";
@@ -54,7 +51,7 @@ private:
     bool mStop = false;
     string removeNewLine(string plateRecognised);
     string validateLicensePlate(string plateRecognised);
-    QString imagePath();
+//    QString imagePath();
     string* platechar = new string;
     alpr::AlprResults results;
 };

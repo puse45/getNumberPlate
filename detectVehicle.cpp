@@ -11,12 +11,12 @@ using namespace std;
 using namespace cv;
 
 
-DetectVehicle::DetectVehicle(QObject *parent) {
-    QString currentPath = DetectVehicle::imagePath();
+DetectVehicle::DetectVehicle() {
+//    QString currentPath = DetectVehicle::imagePath();
     string croppedImageDir = "/images";
-    string savingImageDir = currentPath.toStdString()+ croppedImageDir;
-    QDir dir(QString::fromStdString(savingImageDir));
-    dir.removeRecursively();
+//    string savingImageDir = currentPath.toStdString()+ croppedImageDir;
+//    QDir dir(QString::fromStdString(savingImageDir));
+//    dir.removeRecursively();
     openalpr = new alpr::Alpr("us,eu,vn2", "/etc/openalpr/openalpr.conf");
     openalpr->setTopN(20);
     // comparing the plate text with the regional pattern.
@@ -40,15 +40,15 @@ QString DetectVehicle::imagePath() {
 }
 
 string cropVehicle(Rect cars, Mat& frame){
-    QString currentPath = QDir::currentPath();
+//    QString currentPath = QDir::currentPath();
 //    QString currentPath = "/home/pinje/project/CountingCars/";
     string croppedImageDir = "/images";
-    string savingImageDir = currentPath.toStdString()+ croppedImageDir;
-    QString savingPath = QString::fromStdString(savingImageDir);
-
-    if(!QDir(savingPath).exists()){
-        QDir().mkdir(savingPath);
-    }
+//    string savingImageDir = currentPath.toStdString()+ croppedImageDir;
+//    QString savingPath = QString::fromStdString(savingImageDir);
+//
+//    if(!QDir(savingPath).exists()){
+//        QDir().mkdir(savingPath);
+//    }
 
     cv::Mat croppedRef(frame, cars);
     cv::Mat cropped;
@@ -93,7 +93,7 @@ void DetectVehicle::Vehicle_Recogniton(){
                 if(validateLicensePlate(*platechar)!="0"){
                     string checkPlatePattern = validateLicensePlate(*platechar);
                     if(checkPlatePattern != ""){
-                        QString plate = QString::fromStdString(checkPlatePattern);
+//                        QString plate = QString::fromStdString(checkPlatePattern);
                         qDebug()<<plate<<endl;
                     }
                 }
@@ -133,6 +133,6 @@ string DetectVehicle::validateLicensePlate(string plateRecognised) {
 }
 
 void DetectVehicle::stop() {
-    qDebug()<<endl<<"Stopping detection "<<endl;
+//    qDebug()<<endl<<"Stopping detection "<<endl;
     mStop = true;
 }
