@@ -4,7 +4,7 @@
 
 #include "player.h"
 
-Player::Player(QObject *parent) {
+Player::Player() {
 //    connect(this,&Player::on_stop_dv,&dv,&DetectVehicle::stop);
 }
 
@@ -25,7 +25,7 @@ void Player::startDetection(string videoPath) {
         cap.read(nextFrame);
         if(nextFrame.empty()){
             cout<<"End of video file"<<endl;
-            emit on_stop_dv();
+
             destroyAllWindows();
         }
         if (nextFrame.empty() || key == 'q')
@@ -46,7 +46,7 @@ void Player::startDetection(string videoPath) {
         mutex_.unlock();
         char c=(char)waitKey(25);
         if(c==27){
-            emit on_stop_dv();
+
             break;
         }
     }

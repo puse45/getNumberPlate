@@ -2,8 +2,6 @@
 // Created by pinje on 10/10/18.
 //
 
-#include <QtCore/QFuture>
-#include <QtConcurrent/QtConcurrent>
 #include "detectVehicle.h"
 
 
@@ -34,10 +32,7 @@ DetectVehicle::~DetectVehicle() {
     mStop = true;
 }
 
-QString DetectVehicle::imagePath() {
-    QString path = QDir::currentPath();
-    return path;
-}
+
 
 string cropVehicle(Rect cars, Mat& frame){
 //    QString currentPath = QDir::currentPath();
@@ -57,7 +52,7 @@ string cropVehicle(Rect cars, Mat& frame){
     //        cv::imshow( "Original Image",  cropped);
     string extension = ".jpg";
     int random_integer = rand();
-    string s =  savingImageDir+"/"+std::to_string(random_integer)+extension;
+    string s =  std::to_string(random_integer)+extension;
     imwrite(s , cropped );
     return s;
 }
@@ -94,7 +89,7 @@ void DetectVehicle::Vehicle_Recogniton(){
                     string checkPlatePattern = validateLicensePlate(*platechar);
                     if(checkPlatePattern != ""){
 //                        QString plate = QString::fromStdString(checkPlatePattern);
-                        qDebug()<<plate<<endl;
+
                     }
                 }
             }
@@ -132,7 +127,7 @@ string DetectVehicle::validateLicensePlate(string plateRecognised) {
     }
 }
 
-void DetectVehicle::stop() {
-//    qDebug()<<endl<<"Stopping detection "<<endl;
-    mStop = true;
-}
+//void DetectVehicle::stop() {
+////    qDebug()<<endl<<"Stopping detection "<<endl;
+//    mStop = true;
+//}

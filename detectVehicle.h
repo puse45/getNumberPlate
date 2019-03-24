@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <QtCore/QDir>
 #include <alpr.h>
 #include <iterator>
 #include <regex>
@@ -23,7 +22,7 @@ class DetectVehicle
 {
 
 public:
-    DetectVehicle(QObject *parent = 0);
+    DetectVehicle();
     ~DetectVehicle();
 
     void Capture_Frame(const Mat& _new_frame, Mat& _new_next_frame);

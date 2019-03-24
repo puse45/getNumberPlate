@@ -5,9 +5,6 @@
 #ifndef GETNUMBERPLATE_PLAYER_H
 #define GETNUMBERPLATE_PLAYER_H
 
-//#include <QObject>
-//#include <QDebug>
-//#include <QThread>
 #include <iostream>
 #include <thread>
 
@@ -21,7 +18,7 @@ using namespace cv;
 
 class Player{
 public:
-    explicit Player(QObject *parent= 0);
+    explicit Player();
     ~Player();
     void startDetection(string videoPath);
     mutex mutex_;
